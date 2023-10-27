@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+    @apply bg-[#0f172a] text-white;
+
+}
+
+/* Sol sidebar: 225px / 15rem */
+/* AUTO - Orta: 915px  - 0.5 scrollbar payı */
+/* Sağ sidebar: 300px */
+/* Toplam 1440px */
