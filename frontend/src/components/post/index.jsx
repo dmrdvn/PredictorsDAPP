@@ -83,12 +83,12 @@ export default function Post({post}){
                     {/* Kehanet İçeriği */}
                     <div className=" bg-[#192435] w-full p-4 overflow-hidden rounded-[0.375rem] z-0 flex flex-col ">
 
-                            <div className=' text-[9px] text-[white]/[.50]'>Paylaşım Tarihi: {dateFormat(startDate)}</div>          
+                            <div className=' text-[10px] text-[white]/[.50]'>Paylaşım Tarihi: {dateFormat(startDate)}</div>          
                             <h3>{post.content}</h3>
                     </div>
                     
                     {/* Kalan Süre Alanı */}
-                    <div id="vote" className="flex justify-center gap-5 items-center">
+                    <div id="time" className="flex justify-center gap-5 items-center">
                         <div>Kalan Süre: {leftDays} </div>
                     </div>  
                 </div>
@@ -105,9 +105,9 @@ export default function Post({post}){
 
                  {/* Action Butonları */}   
                 <div id="interact-buttons" className="flex gap-5">
-                    <p className="flex items-center gap-1 cursor-pointer"><AiOutlineComment/> {post.stats.comments}</p>
-                    <p className="flex items-center gap-1 cursor-pointer"><AiOutlineShareAlt/> {post.stats.share}</p>
-                    <p className="flex items-center gap-1 cursor-pointer"><VscWorkspaceTrusted/> {post.stats.trust}</p>
+                    <a href="#" className="p-1 flex items-center gap-1 hover:text-[#f91880] hover:text-[18px]" title="Paylaş"><AiOutlineShareAlt /> <span className='text-[.9rem]'>{post.stats.share}</span></a>
+                    <a href="#" className="p-1 flex items-center gap-1 hover:text-[#00ba7c] hover:text-[18px]" title="Yorum Yap"><AiOutlineComment/> <span className='text-[.9rem]'>{post.stats.comments}</span></a>
+                    <a href="#" className="p-1 flex items-center gap-1 hover:text-[orange] hover:text-[18px]" title="Güvenilir"><VscWorkspaceTrusted/> <span className='text-[.9rem]'>{post.stats.trust}</span></a>
                 </div>
 
                 {/* Post Metadaları */}
