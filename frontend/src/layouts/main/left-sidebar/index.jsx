@@ -9,7 +9,7 @@ export default function LeftSidebar() {
             <HeaderLogo />
             <LeftMenu />
             
-            <div className="mt-auto bottom-0">
+            <div className="mt-auto bottom-0 p-3">
                 <LeftSidebarBox />
             </div>
         </aside>

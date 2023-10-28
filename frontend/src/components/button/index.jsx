@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 export default function Button( {size, children }) {
     return createElement('button', {
         className: classNames("bg-[#A78NFA] rounded-[0.375rem]", {
-            "bg-[red] px-2 py-2": size === 'normal',
+            "bg-[#192435] border border-[white] px-2 py-2 hover:bg-[red]": size === 'normal',
         }
             
         ) 

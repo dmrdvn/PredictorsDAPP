@@ -5,6 +5,7 @@
 
 body {
     @apply bg-[#0f172a] text-white;
+    @apply font-roboto;
 
 }
 
