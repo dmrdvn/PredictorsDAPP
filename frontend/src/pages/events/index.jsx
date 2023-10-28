@@ -1,7 +1,10 @@
+import StickyHeader from "../../components/stickheader";
+
 function Events() {
     return (
         <div>
-            Events Page
+            <StickyHeader title="Etkinlikler"/>
+            Etkinlikler Sayfası çok yakında burada olacak.
         </div>
     )
 }

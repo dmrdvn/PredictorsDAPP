@@ -1,7 +1,8 @@
+import StickyHeader from "../../components/stickheader";
 function Profile() {
     return (
         <div>
-            Profile Page
+            <StickyHeader title="Profilim"/>
         </div>
     )
 }

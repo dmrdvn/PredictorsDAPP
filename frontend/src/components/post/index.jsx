@@ -3,8 +3,18 @@ import {FaEthereum} from 'react-icons/fa'
 import {VscWorkspaceTrusted} from 'react-icons/vsc'
 import React, { useEffect, useState } from 'react';
 import { dateFormat } from "../../utils/format";
+import postTrustPoint from '../../utils/post-trust-point';
+
 
 export default function Post({post}){
+
+    //Post Status Datas
+    const postDatas = {
+        dogrulanmisProfil: post.account.isVerified,
+        katilimciSayisi: post.prediction.participants,
+        begenenSayisi: post.stats.trust,
+        yorumSayisi: post.stats.comments,
+    };
 
     //Date İşlemleri
     const startDate = new Date(post.prediction.startOfTime); // Başlangıç tarihi
@@ -123,6 +133,13 @@ export default function Post({post}){
                         <span className="p-1 pr-1.5 bg-[#eef3f41a] rounded-[0.375rem] flex items-center">
                             <FaEthereum/>{post.prediction.bets}
                         </span>
+                    </div>
+
+                    <div className='flex items-center justify-center gap-1'>
+                      
+                  
+                        Güvenilirlik Puanı: 
+                        <span className="p-1  bg-[#eef3f41a] rounded-[0.375rem]" title="Hesaplama => Web3 ID + Katılımcı Sayısı + Trust Sayısı + Yorum Sayısı ">{postTrustPoint({...postDatas})}</span>
                     </div>
                 </div>               
             </div>  

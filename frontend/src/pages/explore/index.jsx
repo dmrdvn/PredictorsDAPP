@@ -1,7 +1,11 @@
+import StickyHeader from "../../components/stickheader";
+
+
 function Explore() {
     return (
         <div>
-            Explore Page
+            <StickyHeader title="Tüm Kehanetler"/>
+            Tüm Kehanetler
         </div>
     )
 }
