@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
+// Tells the Solidity compiler to compile only from v0.8.13 to v0.9.0
+pragma solidity ^0.8.13;
 
-pragma solidity ^0.8.7;
+//import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract PredictorsApp {
     
     /* ////////////////////////////////// */
     /* ////////// DEĞİŞKENLER /////////// */
     /* ////////////////////////////////// */
-
+    address private owner; // Contract sahibinin adresini tutmak için bir değişken oluşturuyoruz.
     uint256 public userCount; // Kullanıcı sayısını tutmak için bir değişken oluşturuyoruz. Backend'e saklayacağız
     uint256 public postCount; // Post sayısını tutmak için bir değişken oluşturuyoruz. Backend'e saklayacağız
     address public admin; // Admin adresini tutmak için bir değişken oluşturuyoruz.
@@ -73,13 +75,14 @@ contract PredictorsApp {
     event NewPost(uint256 id,string postContent,uint256 postBet,uint256 postEndDate,address postAuthor,SIDE _side);
     event PostParticipation(uint256 postId,address participant,uint256 amount,SIDE _side);
     event PostFinish(uint256 postId,address winner,uint256 totalBet,uint256 authorReward);
-
+    event BalanceWithdrawn(address walletAddress,uint256 amount);
     /* ////////////////////////////////// */
     /* /////////// CONSTRUCTOR ////////// */
     /* ////////////////////////////////// */
 
     // Başlangıçta ilklenmesi için constructor fonksiyonu oluşturuyoruz, kullanıcı ve post sayılarını sıfıra ayarlıyoruz.
     constructor() {
+        owner = msg.sender;
         userCount = 0;
         postCount = 0;
     }
@@ -89,14 +92,18 @@ contract PredictorsApp {
     /* ////////////////////////////////// */
 
     // Sadece adminin kullanabileceği fonksiyonları belirlemek için bir modifier oluşturuyoruz.
-   /*  modifier onlyAdmin() {
-        require(msg.sender == admin, "Bu islem icin admin yetkisi gerekmektedir!"); //Bağlanan adresin admin olup olmadığını kontrol ediyoruz.
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Sadece hesap sahibi degistirebilir!");
         _;
-    } */
+    }
     
     /* ////////////////////////////////// */
     /* /////// EXECUTE FONKSIYONLAR ///// */
     /* ////////////////////////////////// */
+    // UI'da kullanıcı değişirse yeni sahipliği setOwner ile vereceğiz
+    function setOwner(address _newOwner) external onlyOwner {  
+        owner = _newOwner;
+    }
 
     // Kullanıcı oluşturma fonksiyonu
     function registerUser(string memory _fullName) public {
@@ -119,7 +126,6 @@ contract PredictorsApp {
 
         emit NewUser(userCount, _fullName, msg.sender);
     }
-
     // Post oluşturma fonksiyonu
     function createPost(string memory _postContent,uint256 _postBet,uint256 _postEndDate, SIDE _side) public {
         require(bytes(_postContent).length > 0, "Post content is required");
@@ -152,8 +158,8 @@ contract PredictorsApp {
         
         //Kullanicinin toplam tahmin sayisini guncelliyoruz
         users[msg.sender].allPredictions.push(postCount);
-        emit NewPost(postCount, _postContent, _postBet, _postEndDate, msg.sender, _side
-        );
+
+        emit NewPost(postCount, _postContent, _postBet, _postEndDate, msg.sender, _side);
     }
 
     // Diğer kullanıcıların bir posta katılım fonksiyonu
@@ -187,7 +193,7 @@ contract PredictorsApp {
 
     // Etkinligin kazanani belirleyen fonksiyon.
     // winner ile 0(LEFT) veya 1(RIGHT) alacaz. loser ile 0(LEFT) veya 1(RIGHT) alacaz
-    function sonucuRaporla( uint256 _postId, SIDE _winner, SIDE _loser) external payable {
+    function postResults( uint256 _postId, SIDE _winner, SIDE _loser) external payable {
         //require(predictor == msg.sender, "Kahin degilsiniz!"); //Kahin olup olmadığını kontrol ediyoruz.
         require(posts[_postId].postFinished == false, "Kehanet bitmedi!"); //Kehanetin bitmediyse devam et, bittiyse rapor oluşturma.
         
@@ -231,19 +237,33 @@ contract PredictorsApp {
         }
     }
 
+    /* //withdrawBalance
+    function withdrawBalance(uint amount) external nonReentrant {
+        require(isUser(msg.sender), "Kullanici bulunamadi!");
+        
+        uint balance = users[msg.sender].balance;
+        require(balance >= amount, "Yetersiz bakiye!");
+
+        users[msg.sender].balance -= amount;
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed.");
+
+        emit BalanceWithdrawn(msg.sender, amount);
+    } */
 
     /* //////////////////////////////////// */
     /* //////// QUERY FONKSIYONLAR //////// */
     /* //////////////////////////////////// */
 
-    // Kullanıcının ad ve soyadını çeken fonksiyon
-    function getUserFullName(address userAddress) public view returns (string memory) {
-        return string(abi.encodePacked(users[userAddress].fullName)); 
-    }
-
     //Kullanıcı var olup olmadığını kontrol ediyoruz. True yada False dönmesini bekliyoruz.
     function isUser(address _walletAddress) private view returns (bool) {
         return users[_walletAddress].walletAddress == _walletAddress; // Adress verdiğimiz kullanıcının adresi 0'a eşit değilse true döndürüyoruz.
+    }
+   
+    // Kullanıcının ad ve soyadını çeken fonksiyon
+    function getUserFullName(address userAddress) public view returns (string memory) {
+        return string(abi.encodePacked(users[userAddress].fullName)); 
     }
 
     //Kullanıcı bilgilerini çekme fonksiyonu
@@ -310,5 +330,26 @@ contract PredictorsApp {
         return postsWithStatus;
     }
 
-    
+    function getOwner() external view returns(address) {
+         return owner;
+    }
+
+    function getUser(address walletAddress) external view returns (User memory) {
+        require(isUser(walletAddress), "Kullanici bulunamadi!");
+        return users[walletAddress];
+    }
+
+    function getPost(uint _id) external view returns(Post memory) {
+        require(posts[_id].id != 0, "Post does not exist!");
+        return posts[_id];
+    }
+
+    function getUserCount() external view returns (uint) {
+        return userCount;
+    }
+
+    function getPostCount() external view returns (uint) {
+        return postCount;
+    }
+
 }

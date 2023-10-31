@@ -2,14 +2,29 @@
   "name": "predictorsdapp",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmrdvn/PredictorsDAPP.git"
+  },
+  "keywords": [
+    "Predictors",
+    "dAPP"
+  ],
+  "author": "Hasan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dmrdvn/PredictorsDAPP/issues"
+  },
+  "homepage": "https://github.com/dmrdvn/PredictorsDAPP#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0",
-    "@truffle/hdwallet-provider": "^2.1.15"
+    "web3": "^4.2.1"
   }
 }
