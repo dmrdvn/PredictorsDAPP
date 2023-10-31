@@ -1,3 +1,8 @@
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const mnemonic = ''; // MetaMask veya başka bir cüzdanın 12 kelime ile oluşturduğu seed ifadesi
+const bscUrl = 'https://bsc-dataseed.binance.org/';
+const infuraURL = "https://data-seed-prebsc-1-s1.binance.org:8545"; // BSC Testnet (bsctest) URL'si
+
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -56,6 +61,7 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
+  
 
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
@@ -64,11 +70,25 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
-    // },
+    development: {
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 7545,            // Standard Ethereum port (default: none)
+      network_id: "5777",       // Any network (default: none)
+     },
+    bsc: {
+      provider: () => new HDWalletProvider(mnemonic, bscUrl),
+      network_id: 56, // BSC ağı kodu
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+    }, 
+    bsctest: {
+      provider: function () {
+        return new HDWalletProvider(mnemonic, infuraURL);
+      },
+      network_id: "97",
+    },
+    
     //
     // An additional network, but with some advanced options…
     // advanced: {
@@ -106,7 +126,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.21",      // Fetch exact version from solc-bin (default: truffle's version)
+      version: "^0.8.7",      // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {
