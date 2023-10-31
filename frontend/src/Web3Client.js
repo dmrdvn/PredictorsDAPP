@@ -1,10 +1,10 @@
 import Web3 from "web3";
-import RenterABI from "./ABI/RentalPlatform.json";
+import PredictorsABI from "../src/contracts/PredictorsApp.json";
 
 let selectedAccount;
 let predictorsContract;
 let isInitialized = false;
-let predictorsContractAddress = "0x2Eb7372a17F44dF70f5aCcB4A9BB5efD84709474";
+let predictorsContractAddress = "0x88CC2C920f2D063f536802E49742f3BdFF176FF3";
 //0xf3049720fcEd4519bCcd115d8162F4BF6a11Fe35
 
 export const init = async () => {
@@ -31,7 +31,7 @@ export const init = async () => {
 
   const networkId = await web3.eth.net.getId();
 
-  predictorsContract = new web3.eth.Contract(RenterABI.abi, predictorsContractAddress);
+  predictorsContract = new web3.eth.Contract(PredictorsABI.abi, predictorsContractAddress);
 
   isInitialized = true;
 };
@@ -64,7 +64,7 @@ export const registerUser = async (_fullName) => {
   }
   try {
     let res = await predictorsContract.methods
-    .addUser(name)
+    .registerUser(_fullName)
     .send({ from: selectedAccount });
     return res;
   } catch(e) {
@@ -198,6 +198,29 @@ export const getUserFullName = async (userAddress) => {
   }
   try {
     let res = await predictorsContract.methods.getUserDetails(userAddress).call();
+    return res;
+  } catch(e) {
+    console.error(e);
+  }
+};
+export const getPost = async (_id) => {
+  if (!isInitialized) {
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods.getPost(_id).call();
+    return res;
+  } catch(e) {
+    console.error(e);
+  }
+};
+
+export const getUser = async (_walletAddress) => {
+  if (!isInitialized) {
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods.getUser(_walletAddress).call();
     return res;
   } catch(e) {
     console.error(e);

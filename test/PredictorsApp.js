@@ -1,6 +1,5 @@
-//const Web3 = require('web3');
-//const web3 = new Web3('https://bsc-dataseed.binance.org/'); // BSC ağının RPC URL'sini kullanın
-const web3 = new Web3(Web3.givenProvider || "https://bsc-dataseed.binance.org/");
+const Web3 = require('web3');
+const web3 = new Web3('https://bsc-dataseed.binance.org/');
 
 const PredictorsApp = artifacts.require("PredictorsApp");
 const SIDE = {
@@ -10,7 +9,7 @@ const SIDE = {
 
 contract('PredictorsApp', (accounts) => {
   let predictorsApp; 
-  const [user1, user2, user3, user4, user5] = accounts; 
+  const [user1, user2] = accounts; 
   
   before(async () => {
     predictorsApp = await PredictorsApp.deployed();
