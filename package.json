@@ -26,5 +26,8 @@
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0",
     "web3": "^4.2.1"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.16"
   }
 }
