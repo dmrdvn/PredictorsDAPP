@@ -1,9 +1,9 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const mnemonic = 'legal holiday fish give shadow lunar dawn field cousin warfare federal post'; // MetaMask veya başka bir cüzdanın 12 kelime ile oluşturduğu seed ifadesi
-const bscUrl = 'https://bsc-dataseed.binance.org/';
+require('dotenv').config();
+const mnemonic = process.env["MNEMONIC"].toString().trim();
+//const mnemonic = "legal holiday fish give shadow lunar dawn field cousin warfare federal post";
 const infuraURL = "https://data-seed-prebsc-1-s1.binance.org:8545"; // BSC Testnet (bsctest) URL'si
-
-
+const infuraProjectId = "a4fb4cc763be46399d843403359d1acf"
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -40,6 +40,7 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
+  contracts_directory: './contracts',
   contracts_build_directory: './frontend/src/contracts',
 
   networks: {
@@ -54,25 +55,19 @@ module.exports = {
     port: 7545,            // Standard Ethereum port (default: none)
     network_id: "*",       // Any network (default: none)
     },
-    /* bsc: {
-      provider: () => new HDWalletProvider(mnemonic, bscUrl),
-      network_id: 56, // BSC ağı kodu
-      confirmations: 10,
-      timeoutBlocks: 200,
-      skipDryRun: true,
-    },  */
     bsctest: {
       provider: function () {
         return new HDWalletProvider(mnemonic, infuraURL);
       },
       network_id: "97",
-    },
-    //
-    // goerli: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://goerli.infura.io/v3/${infuraProjectId}`),
-    //   network_id: 5,       // Goerli's id
-    //   chain_id: 5
-    // }
+    }, 
+    /* bsctest:{
+      provider: () => new HDWalletProvider(mnemonic, `https://data-seed-prebsc-2-s1.binance.org:8545/`),
+      network_id: 97,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: trueß
+    }, */
   },
 
   // Set default mocha options here, use special reporters etc.
@@ -83,10 +78,10 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.13",      // Fetch exact version from solc-bin
+      version: "0.8.13", 
     }
   },
   db: {
-    enabled: true
+    //enabled: true
   }
 };

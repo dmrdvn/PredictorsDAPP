@@ -1,13 +1,15 @@
 {
   "name": "predictorsdapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "Predictors Platform that I developed on the Binance Smart Chain . Users can publish their future predictions on this platform and place bets on these predictions.",
   "main": "truffle-config.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "truffle compile",
+    "migrate": "truffle migrate"
   },
   "repository": {
     "type": "git",
@@ -15,7 +17,9 @@
   },
   "keywords": [
     "Predictors",
-    "dAPP"
+    "dAPP",
+    "BSC dApp",
+    "Binance Smart Chain dApp"
   ],
   "author": "Hasan",
   "license": "MIT",
@@ -25,7 +29,7 @@
   "homepage": "https://github.com/dmrdvn/PredictorsDAPP#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0",
-    "web3": "^4.2.1"
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.16"
