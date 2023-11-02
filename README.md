@@ -1,8 +1,42 @@
 # Predictors dAPP Platform on Binance Smart Chain Testnet!
 
 ## Overview
-The Predictors dApp application is still under development.
-All details will be available here very soon.
+PredictorsApp app is a distributed entertainment platform on Binance Smart Chain.
+This dApp is deployed on the BSC network in the web3 ecosystem and targets web3 users.
+Users can share their predictions for the future on this platform and place bets on their predictors based on these predictors.
+To immortalize their successful predictions, they can print them as NFTs and share them with their friends.
+
+In PredictorsApp, which aims to have high user interaction, <b>users will understand the web3 world better</b> and will have already reserved their place in this Web3 world.
+
+The project is still in the development stage. Therefore, errors are likely to occur.
+To contribute to the project, you can let me know about any errors you find or open an Issues.
+
+Thank you for your valuable contributions.
+
+With love ❤️
+
+[Live Demo](https://predictors-dapp.vercel.app/)
+
+## Updates Notes
+💪 Available Version
+  - Users can register on the platform and customize their profile.
+  - Users can create a prediction and bet on other predictions.
+  - Users can withdraw the rewards of the predictions they have won to their Metamask wallet.
+  - Users can change the language and theme of the site.
+    
+🧑‍💻 Next Versions
+  - Users can like and comment on prediction posts of other users shared in the timeline.
+  - Each user can gain Predictor Badges based on the experience they gain. (Head Predictor, Novice Predictor, etc.)
+  - Each predictor can create a special NFT for their winning prediction.
+  - Predictors can sell the NFTs they earn/produce on the marketplace.
+  - Detailed statistics of shared predictions.
+  - User can interact with.
+  - Users can purchase a web3 ID to benefit from all the features of the platform.
+  - Users can filter and browse "Trending Predictions" available on the platform.
+  - Users can share their predictions as different post types.
+
+## Test-Case Results & Deploy
+<img src="https://github.com/dmrdvn/PredictorsDAPP/blob/main/screenshots/testanddeploy.gif" width="auto">
 
 ## Prerequisites
 - Node.js
