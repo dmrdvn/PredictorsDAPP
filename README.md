@@ -4,12 +4,12 @@
 PredictorsApp app is a distributed entertainment platform on Binance Smart Chain.
 This dApp is deployed on the BSC network in the web3 ecosystem and targets web3 users.
 Users can share their predictions for the future on this platform and place bets on their predictors based on these predictors.
-To immortalize their successful predictions, they can print them as NFTs and share them with their friends.
+To immortalize their successful predictions, they can mint them as NFTs and share them with their friends.
 
 In PredictorsApp, which aims to have high user interaction, <b>users will understand the web3 world better</b> and will have already reserved their place in this Web3 world.
 
 The project is still in the development stage. Therefore, errors are likely to occur.
-To contribute to the project, you can let me know about any errors you find or open an Issues.
+To contribute to the project, you can let me know about any errors you find or open an Issue.
 
 Thank you for your valuable contributions.
 
