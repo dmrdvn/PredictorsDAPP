@@ -1,8 +1,7 @@
 import React from 'react'
-import store from '../store'
 
-const states = store.getState()
-console.log(states.auth.currentAccount.userName)
+
+
 
 export  const consts = () => {
   return (

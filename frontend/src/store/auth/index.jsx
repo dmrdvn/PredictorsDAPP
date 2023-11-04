@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     currentAccount: {
-        id: 1,
-        userName: 'test',
+        /* id: 1, */
+        /* userName: 'test', */
         fullName: 'Test User',
         wallet: '0x1234567890',
-        userType: 'admin',
+        /* userType: 'admin',
         avatar: '',
         registerDate: '2021-01-01',
         isVerified: true,
@@ -16,7 +16,7 @@ const initialState = {
         bio: '',
         location: '',
         predictionCount: 0,
-        succesfulPredictions: [],
+        succesfulPredictions: [], */
         
 },
 accounts: []

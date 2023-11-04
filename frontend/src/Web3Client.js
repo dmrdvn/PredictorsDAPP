@@ -34,6 +34,7 @@ export const init = async () => {
   predictorsContract = new web3.eth.Contract(PredictorsABI.abi, predictorsContractAddress);
 
   isInitialized = true;
+ 
 };
 
 export const getUserAddress = async () => {
