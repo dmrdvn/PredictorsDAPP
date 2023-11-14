@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import { useState, useEffect } from 'react';
 import { init, registerUser,getUser,getOwner,getUserAddress, login } from '../../Web3Client';
 import store from '../../store';
-import { useSelector, useDispatch } from 'react-redux';
+//import { useSelector, useDispatch } from 'react-redux';
 
 
 
@@ -31,8 +31,8 @@ Modal.setAppElement('#root');
 
 export default function ConnectWallet() {
 
-  alert(store.getState().auth.currentAccount.wallet)
-  _addAccounts(store.getState().auth.currentAccount.wallet)
+  //alert(store.getState().auth.currentAccount.wallet)
+  //_addAccounts(store.getState().auth.currentAccount.wallet)
   
   const [modalIsOpen, setIsOpen] = React.useState(false); // Modal açık mı kapalı mı
   const [isRegistered, setIsRegistered] = useState(false); // Kayıt olundu mu olunmadı mı
@@ -73,7 +73,7 @@ export default function ConnectWallet() {
         setIsRegistered(true);
         setFullName(user.fullName);
         setWallet(user.walletAddress);
-        alert("Wallet: "+user.walletAddress + " Name: "+user.fullName)
+        //alert("Wallet: "+user.walletAddress + " Name: "+user.fullName)
 
         /* //Cüzdanın sahipliğini kontrol ediyoruz. 1 Cüzdan mı diye
         let address = await getUserAddress(); // MetaMask ile bağlanan kişinin wallet adresini aldık
@@ -86,12 +86,12 @@ export default function ConnectWallet() {
         setIsOpen(true);
       } */
       }else {
-        alert("Cüzdan 0000")
+        alert("Wallet not connected")
       }
 
     }
     catch (error) {
-      alert("birşeyler ters gitti")
+      alert("Something went wrong! Make sure Metamask is installed in your browser.")
       
       setIsOpen(true);
     }
