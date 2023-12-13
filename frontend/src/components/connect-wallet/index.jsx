@@ -1,32 +1,44 @@
-import Web3 from "web3";
-import React from "react";
-import { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { init,getUserAddress, register, getOwner, login } from "../../Web3Client";
-// Assets
+import React from 'react';
+import Modal from 'react-modal';
+import { useState, useEffect } from 'react';
+import { init, registerUser,getUser,getOwner,getUserAddress, login } from '../../Web3Client';
+import store from '../../store';
+import { useSelector, useDispatch } from 'react-redux';
+
+
 
 const customStyles = {
-  content: {
-    top: "40%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    background: "#192435",
-    width: "700px",
-    padding: "40px",
-  },
-};
-Modal.setAppElement("#root");
+    content: {
+      top: '40%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      background:'#192435',
+      width: '500px',
+      padding: '40px',
+    },
+  };
 
-function ConnectWallet() {
-  const [modalIsOpen, setIsOpen] = React.useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [init] = useState(false);
-  const [user, setUser] = useState("");
-  const [name, setName] = useState("");
 
+
+
+Modal.setAppElement('#root');
+  
+
+
+
+export default function ConnectWallet() {
+
+  alert(store.getState().auth.currentAccount.wallet)
+  _addAccounts(store.getState().auth.currentAccount.wallet)
+  
+  const [modalIsOpen, setIsOpen] = React.useState(false); // Modal açık mı kapalı mı
+  const [isRegistered, setIsRegistered] = useState(false); // Kayıt olundu mu olunmadı mı
+  const [isOwner, setIsOwner] = useState(false); // Kayıt olundu mu olunmadı mı
+  const [fullName, setFullName] = useState(''); 
+  const [wallet, setWallet] = useState(''); 
   const emptyAddress = "0x0000000000000000000000000000000000000000";
 
   useEffect(() => {
@@ -78,7 +90,64 @@ function ConnectWallet() {
     setIsOpen(false);
   }
 
-  return (
+  /* useEffect(() => {
+    
+    
+
+    handleInit();
+  }, []); */
+
+  handleInit = async () => {
+    try {
+      await login(); // MetaMask ile bağlanan kişinin wallet adresini aldık
+
+      let user = await getUser(); // MetaMask ile bağlanan kişinin wallet adresini aldık
+      
+
+      if (user.walletAddress !== emptyAddress) { //Kullanıcı varsa
+
+        setIsRegistered(true);
+        setFullName(user.fullName);
+        setWallet(user.walletAddress);
+        alert("Wallet: "+user.walletAddress + " Name: "+user.fullName)
+
+        /* //Cüzdanın sahipliğini kontrol ediyoruz. 1 Cüzdan mı diye
+        let address = await getUserAddress(); // MetaMask ile bağlanan kişinin wallet adresini aldık
+        let owner = await getOwner();
+        if (address === owner.toLowerCase()) {
+          setIsOwner(true);
+      
+      } else {
+        setIsRegistered(false);
+        setIsOpen(true);
+      } */
+      }else {
+        alert("Cüzdan 0000")
+      }
+
+    }
+    catch (error) {
+      alert("birşeyler ters gitti")
+      
+      setIsOpen(true);
+    }
+  }
+
+
+
+  const handleNameChange = (event) => {
+    setFullName(event.target.value);
+    console.log(fullName)
+  };
+
+  const register = () => {
+    registerUser(fullName)
+    setIsRegistered(true);
+  }
+
+
+
+    return(
     <div>
       <div className="flex gap-3">
         <button className="justify-center items-center p-3 bg-[#eef3f41a] rounded-[0.375rem]">
@@ -165,5 +234,3 @@ function ConnectWallet() {
     </div>
   );
 }
-
-export default ConnectWallet;
