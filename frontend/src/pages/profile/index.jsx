@@ -2,7 +2,7 @@ import StickyHeader from "../../components/stickheader";
 function Profile() {
     return (
         <div>
-            <StickyHeader title="Profilim"/>
+            <StickyHeader title="My Profile"/>
         </div>
     )
 }

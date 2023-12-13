@@ -1,54 +1,48 @@
-import React from 'react'
+import React from "react";
 
-
-
-
-export  const consts = () => {
-  return (
-    <div>const</div>
-  )
-}
+export const consts = () => {
+  return <div>const</div>;
+};
 
 export const topics = [
   {
-    local: 'Dünyada Trend',
+    local: "Trend in the World",
     topic: {
-      title: 'İsrail - Filistin Savaşı Çıkacak!',
-      value: 'testerkahin1'
+      title: "Israel - Palestine War Will Break Out!",
+      value: "testerkahin1",
     },
     participantCount: 981,
   },
   {
-    local: 'Türkiyede Trend',
+    local: "Trend in Turkey",
     topic: {
-      title: 'Kemal Kılıçtaroğlu Belediye Seçimlerini Kazanacak!',
-      value: 'testerkahin2'
+      title: "Kemal Kılıçtaroğlu Belediye Seçimlerini Kazanacak!",
+      value: "testerkahin2",
     },
     participantCount: 100000,
   },
   {
-    local: 'Dünyada Trend',
+    local: "Trend in the World",
     topic: {
-      title: 'Yeni bir virüs varyantı geliyor!',
-      value: 'testerkahin5'
+      title: "A new virus variant is coming!",
+      value: "testerkahin5",
     },
     participantCount: 5000,
   },
   {
-    local: 'Dünyada Trend',
+    local: "Trend in the World",
     topic: {
-      title: 'Bitcoin 2024 te 1 Milyon Dolar Olacak!',
-      value: 'testerkahin1'
+      title: "Bitcoin Will Be 1 Million Dollars in 2024!",
+      value: "testerkahin1",
     },
     participantCount: 301340,
   },
   {
-    local: 'Dünyada Trend',
+    local: "Trend in the World",
     topic: {
-      title: 'Bitcoin 2024 te 1 Milyon Dolar Olacak!',
-      value: 'testerkahin1'
+      title: "A 9.0 magnitude earthquake will occur in Eastern Europe in 2024!",
+      value: "testerkahin1",
     },
     participantCount: 301340,
   },
-
-]
+];

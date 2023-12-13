@@ -1,11 +1,10 @@
 import Web3 from "web3";
-import PredictorsABI from "../src/contracts/PredictorsApp.json";
+import PredictorsABI from "./contracts/PredictorsApp.json";
 
 let selectedAccount;
 let predictorsContract;
 let isInitialized = false;
-let predictorsContractAddress = "0x88CC2C920f2D063f536802E49742f3BdFF176FF3";
-//0xf3049720fcEd4519bCcd115d8162F4BF6a11Fe35
+let predictorsContractAddress = "0x3a79e9eFF9D4919faa33352bb227AA1959dbd7f8";
 
 export const init = async () => {
   // Configure contract
@@ -18,8 +17,8 @@ export const init = async () => {
         selectedAccount = accounts[0];
       })
       .catch((err) => {
-        // console.log(err);
-        return;
+        console.log(err);
+        
       });
   }
 
@@ -31,10 +30,12 @@ export const init = async () => {
 
   const networkId = await web3.eth.net.getId();
 
-  predictorsContract = new web3.eth.Contract(PredictorsABI.abi, predictorsContractAddress);
+  predictorsContract = new web3.eth.Contract(
+    PredictorsABI.abi,
+    predictorsContractAddress
+  );
 
   isInitialized = true;
- 
 };
 
 export const getUserAddress = async () => {
@@ -51,38 +52,59 @@ export const setOwner = async (newOwner) => {
   }
   try {
     let res = await predictorsContract.methods
-    .setOwner(newOwner.toLowerCase())
-    .send({ from: selectedAccount });
+      .setOwner(newOwner.toLowerCase())
+      .send({ from: selectedAccount });
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
 
-export const registerUser = async (_fullName) => {
+export const register = async (name) => {
+  if (!isInitialized) {
+    alert("You must install Metamask to use this dApp!");
+    
+    window.location.href = "https://metamask.io/download.html";
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods
+      .registerUser(name)
+      .send({ from: selectedAccount });
+    console.error("Registered");
+    return res;
+  } catch (e) {
+    console.error(e, "Not Registered!");
+  }
+};
+
+export const login = async () => {
+  if (!isInitialized) {
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods.getUser(selectedAccount).call();
+    return res;
+  } catch (e) {
+    console.error(e, "Login Failed!");
+  }
+};
+
+export const createPost = async (
+  _postContent,
+  _postBet,
+  _postEndDate,
+  _side
+) => {
   if (!isInitialized) {
     await init();
   }
   try {
     let res = await predictorsContract.methods
-    .registerUser(_fullName)
-    .send({ from: selectedAccount });
+      .createPost(_postContent, _postBet, _postEndDate, _side)
+      .send({ from: selectedAccount });
     return res;
-  } catch(e) {
-    console.error(e);
-  }
-};
-
-export const createPost = async (_postContent, _postBet,_postEndDate, _side) => {
-  if (!isInitialized) {
-    await init();
-  }
-  try {
-    let res = await predictorsContract.methods
-    .createPost(_postContent, _postBet, _postEndDate, _side)
-    .send({ from: selectedAccount });
-    return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -93,10 +115,10 @@ export const participateInPost = async (_postId, _amount, _side) => {
   }
   try {
     let res = await predictorsContract.methods
-    .participateInPost(_postId, _amount, _side)
-    .send({from: selectedAccount});
+      .participateInPost(_postId, _amount, _side)
+      .send({ from: selectedAccount });
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -107,10 +129,10 @@ export const postResults = async (_id, _winner, _loser) => {
   }
   try {
     let res = await predictorsContract.methods
-    .postResults(_id, _winner, _loser )
-    .send({from: selectedAccount});
+      .postResults(_id, _winner, _loser)
+      .send({ from: selectedAccount });
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -154,19 +176,7 @@ export const getOwner = async () => {
   try {
     let res = await predictorsContract.methods.getOwner().call();
     return res.toString();
-  } catch(e) {
-    console.error(e);
-  }
-};
-
-export const login = async () => {
-  if (!isInitialized) {
-    await init();
-  }
-  try {
-    let res = await predictorsContract.methods.getUser(selectedAccount).call();
-    return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -178,7 +188,7 @@ export const getPostDetails = async (_id) => {
   try {
     let res = await predictorsContract.methods.getPostDetails(_id).call();
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -187,9 +197,11 @@ export const getUserDetails = async (_walletAddress) => {
     await init();
   }
   try {
-    let res = await predictorsContract.methods.getUserDetails(_walletAddress).call();
+    let res = await predictorsContract.methods
+      .getUserDetails(_walletAddress)
+      .call();
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -198,9 +210,11 @@ export const getUserFullName = async (userAddress) => {
     await init();
   }
   try {
-    let res = await predictorsContract.methods.getUserDetails(userAddress).call();
+    let res = await predictorsContract.methods
+      .getUserDetails(userAddress)
+      .call();
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -211,7 +225,7 @@ export const getPost = async (_id) => {
   try {
     let res = await predictorsContract.methods.getPost(_id).call();
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -223,7 +237,19 @@ export const getUser = async (_walletAddress) => {
   try {
     let res = await predictorsContract.methods.getUser(_walletAddress).call();
     return res;
-  } catch(e) {
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const isUser = async (selectedAccount) => {
+  if (!isInitialized) {
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods.isUser(selectedAccount);
+    return res;
+  } catch (e) {
     console.error(e);
   }
 };
@@ -235,7 +261,7 @@ export const getPostByStatus = async (_status) => {
   try {
     let res = await predictorsContract.methods.getPostByStatus(_status).call();
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -247,7 +273,7 @@ export const getUserCount = async () => {
   try {
     let res = await predictorsContract.methods.getUserCount().call();
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };
@@ -259,7 +285,7 @@ export const getPostCount = async () => {
   try {
     let res = await predictorsContract.methods.getPostCount().call();
     return res;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };

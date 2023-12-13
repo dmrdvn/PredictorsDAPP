@@ -1,0 +1,40 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/dmrdvn/Projects/PredictorsDAPP/contracts/PredictorsApp.sol": {
+      "lastModificationDate": 1702062527738,
+      "contentHash": "b4699a67d15092568dea617dfc3595d5",
+      "sourceName": "contracts/PredictorsApp.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.13"
+      ],
+      "artifacts": [
+        "PredictorsApp"
+      ]
+    }
+  }
+}

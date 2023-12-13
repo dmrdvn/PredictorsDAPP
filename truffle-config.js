@@ -1,33 +1,12 @@
-const HDWalletProvider = require('@truffle/hdwallet-provider');
-require('dotenv').config();
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+require("dotenv").config();
 const mnemonic = process.env["MNEMONIC"].toString().trim();
-//const mnemonic = "legal holiday fish give shadow lunar dawn field cousin warfare federal post";
-const infuraURL = "https://data-seed-prebsc-1-s1.binance.org:8545"; // BSC Testnet (bsctest) URL'si
-const infuraProjectId = "a4fb4cc763be46399d843403359d1acf"
-/**
- * Use this file to configure your truffle project. It's seeded with some
- * common settings for different networks and features like migrations,
- * compilation and testing. Uncomment the ones you need or modify
- * them to suit your project as necessary.
- *
- * More information about configuration can be found at:
- *
- * https://trufflesuite.com/docs/truffle/reference/configuration
- *
- * To deploy via Infura you'll need a wallet provider (like @truffle/hdwallet-provider)
- * to sign your transactions before they're sent to a remote public node. Infura accounts
- * are available for free at: infura.io/register.
- *
- * You'll also need a mnemonic - the twelve word phrase the wallet uses to generate
- * public/private key pairs. If you're publishing your code to GitHub make sure you load this
- * phrase from a file you've .gitignored so it doesn't accidentally become public.
- *
- */
+//const mnemonic ="";
+const bscURL = "https://data-seed-prebsc-1-s1.bnbchain.org:8545"; // BSC Testnet (bsctest) URL'si
 
 // require('dotenv').config();
 // const mnemonic = process.env["MNEMONIC"];
 // const infuraProjectId = process.env["INFURA_PROJECT_ID"];
- 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
@@ -40,34 +19,29 @@ module.exports = {
    *
    * $ truffle test --network <network-name>
    */
-  contracts_directory: './contracts',
-  contracts_build_directory: './frontend/src/contracts',
+  contracts_directory: "./contracts",
+  contracts_build_directory: "./frontend/src/contracts",
 
   networks: {
-    // Useful for testing. The `development` name is special - truffle uses it by default
-    // if it's defined here and no other network is specified at the command line.
-    // You should run a client (like ganache, geth, or parity) in a separate terminal
-    // tab if you use this network and you must also set the `host`, `port` and `network_id`
-    // options below to some value.
-    //
+
     development: {
-    host: "127.0.0.1",     // Localhost (default: none)
-    port: 7545,            // Standard Ethereum port (default: none)
-    network_id: "*",       // Any network (default: none)
+      host: "127.0.0.1", // Localhost (default: none)
+      port: 7545, // Standard Ethereum port (default: none)
+      network_id: "*", // Any network (default: none)
     },
-    bsctest: {
+    /*  bsctest: {
       provider: function () {
         return new HDWalletProvider(mnemonic, infuraURL);
       },
       network_id: "97",
-    }, 
-    /* bsctest:{
-      provider: () => new HDWalletProvider(mnemonic, `https://data-seed-prebsc-2-s1.binance.org:8545/`),
+    },  */
+    bsctest: {
+      provider: () => new HDWalletProvider(mnemonic, bscURL),
       network_id: 97,
       confirmations: 10,
       timeoutBlocks: 200,
-      skipDryRun: trueß
-    }, */
+      skipDryRun: true,
+    },
   },
 
   // Set default mocha options here, use special reporters etc.
@@ -78,10 +52,10 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.13", 
-    }
+      version: "0.8.13",
+    },
   },
   db: {
     //enabled: true
-  }
+  },
 };

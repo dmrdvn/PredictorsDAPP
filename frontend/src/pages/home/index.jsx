@@ -1,38 +1,33 @@
 import StickyHeader from "../../components/stickheader";
-/* import Tab from "../../components/home-tab"; */
+import Following from "./following";
 import General from "./general";
 import React, {useState, useEffect} from 'react';
-
+import Tab from "./../../components/tab";
 export default function Home() {
 
  
      return (
         
-        <div className=""> 
-            <StickyHeader title="Anasayfa"/>
+        <> 
+        <StickyHeader title="Timeline"/>
             
-            {/* <Tab>    
-                <Tab.Items>
-                        <Tab.Item id="genel">Genel</Tab.Item>
-                        
-                        <Tab.Item id="followings">Takip Edilenler</Tab.Item>
-                    </Tab.Items>
-                    
-                    <Tab.Content>
-                        <Tab.Content id="genel">
-                            1.İçerik
-                        </Tab.Content>
+       <Tab activeTab="general">
+        <Tab.Items>
+            <Tab.Item id="general">General</Tab.Item>
+            <Tab.Item id="following">Followings</Tab.Item>
+        </Tab.Items>
 
-                        <Tab.Content id="followings">
-                            2.İçerik
-                        </Tab.Content>
-                        
-                    </Tab.Content>
-            </Tab> */}
-
+        <Tab.Content id="general">
             <General/>
+        </Tab.Content>
+        <Tab.Content id="following">
+            <Following/>
+        </Tab.Content>
+            
+       </Tab>
+            
 
-        </div>
+        </>
     )
 }
 

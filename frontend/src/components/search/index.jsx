@@ -6,7 +6,7 @@ export default function Search() {
                 <div className="flex items-center justify-center ml-3">
                      <img src={process.env.PUBLIC_URL + '/search.png'} alt="logo" width={20}/>
                 </div>
-                <input type="text" placeholder="Kahin veya bir kehanet ara.." className="w-full h-full bg-transparent rounded-full outline-none pl-[10px]" />
+                <input type="text" placeholder="Search for a prediction" className="w-full h-full bg-transparent rounded-full outline-none pl-[10px]" />
             </label>
         </div>
     )
