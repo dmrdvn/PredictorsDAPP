@@ -18,6 +18,17 @@ export const formattedBet = (value) => {
   return formattedBet;
 };
 
+//Wei'den ethere dönüştür
+export const weiToEth = (value) => {
+  const eth = Web3.utils.fromWei(value, "ether");
+  return eth;
+};
+
+export const ethToWei = (value) => {
+  const wei = Web3.utils.toWei(value.toString(), "ether");
+  return wei;
+};
+
 export const calculateTimeLeft = (value) => {
   const currentTime = new Date(); // Şu anki zamanı al
   const timestamp = currentTime.getTime(); // Şu anki zamanı milisaniye cinsinden al (timestamp)

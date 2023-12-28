@@ -390,7 +390,6 @@ contract PredictorsApp {
         return postBet[_postId] / betMultiplier;
     }
 
-    // Post bet pool miktarını ondalıklı sayıya dönüştürerek görüntülemek için bir fonksiyon
     function getPostBetPool(uint256 _postId) external view returns (uint256) {
         // Bet miktarını ondalıklı sayıya dönüştürmek için bir çarpan kullanabilirsiniz.
         // Bu örnekte 1 ETH'in 10^18 wei olduğunu varsayalım.

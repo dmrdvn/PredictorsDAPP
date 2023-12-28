@@ -6,6 +6,7 @@ import Profile from "../pages/profile";
 import Events from "../pages/events";
 import MainLayout from "../layouts/main";
 import PostCreation from "../pages/postcreation";
+import Proposals from "../pages/proposals";
 
 const routes = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const routes = createBrowserRouter([
       {
         path: "events",
         element: <Events />,
+      },
+      {
+        path: "proposals",
+        element: <Proposals />,
       },
       {
         path: "postcreate",

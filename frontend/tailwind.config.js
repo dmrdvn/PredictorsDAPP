@@ -13,7 +13,21 @@ module.exports = {
       },
       fontFamily: {
         roboto: ['"Roboto"', ...defaultTheme.fontFamily.sans]
-      }
+      },
+      color : {
+        'primary-dark' : '#212f48',
+        'secondary-dark' : '#F0F0F0',
+        'bg-dark': '#152033',
+        'light' : '#FFFFFF',
+        'dark' : '#000000',
+        'danger' : '#FF0000',
+        'success' : '#00FF00',
+        'warning' : '#FFFF00',
+        'info' : '#00FFFF',
+        'transparent' : 'transparent',
+        'current' : 'currentColor',
+        'pink': '#fa00a5',
+      },
       
     },
   },

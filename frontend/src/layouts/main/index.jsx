@@ -8,7 +8,7 @@ export default function MainLayout() {
             <LeftSidebar />
             
             {/* Body */}
-            <main className="flex-1 flex flex-col gap-[30px]">
+            <main className="flex-1 flex flex-col gap-[30px] px-10">
                 <main className="flex-1 max-w[915px]">
                     <Outlet />
                 </main>    

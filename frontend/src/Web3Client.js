@@ -4,7 +4,9 @@ import PredictorsABI from "./contracts/PredictorsApp.json";
 let selectedAccount;
 let predictorsContract;
 let isInitialized = false;
-let predictorsContractAddress = "0x3a79e9eFF9D4919faa33352bb227AA1959dbd7f8";
+let predictorsContractAddress = "0x7185c26105496c4dA0238a0F047E2Faf562aC137";
+
+/* //////////___ EXECUTE FUNCTIONS ___////////// */
 
 export const init = async () => {
   // Configure contract
@@ -18,7 +20,6 @@ export const init = async () => {
       })
       .catch((err) => {
         console.log(err);
-        
       });
   }
 
@@ -38,33 +39,9 @@ export const init = async () => {
   isInitialized = true;
 };
 
-export const getUserAddress = async () => {
-  if (!isInitialized) {
-    await init();
-  }
-  return selectedAccount;
-};
-
-// Execute Functions
-export const setOwner = async (newOwner) => {
-  if (!isInitialized) {
-    await init();
-  }
-  try {
-    let res = await predictorsContract.methods
-      .setOwner(newOwner.toLowerCase())
-      .send({ from: selectedAccount });
-    return res;
-  } catch (e) {
-    console.error(e);
-  }
-};
-
 export const register = async (name) => {
   if (!isInitialized) {
     alert("You must install Metamask to use this dApp!");
-    
-    window.location.href = "https://metamask.io/download.html";
     await init();
   }
   try {
@@ -109,13 +86,13 @@ export const createPost = async (
   }
 };
 
-export const participateInPost = async (_postId, _amount, _side) => {
+export const participateInPost = async (_postId, _side, _amount) => {
   if (!isInitialized) {
     await init();
   }
   try {
     let res = await predictorsContract.methods
-      .participateInPost(_postId, _amount, _side)
+      .participateInPost(_postId, _side, _amount)
       .send({ from: selectedAccount });
     return res;
   } catch (e) {
@@ -137,37 +114,7 @@ export const postResults = async (_id, _winner, _loser) => {
   }
 };
 
-/* export const withdrawBalance = async (value) => {
-  if (!isInitialized) {
-    await init();
-  }
-  let send_value = Web3.utils.toWei(value, "ether");
-  try {
-    let res = await predictorsContract.methods
-    .withdrawBalance(send_value)
-    .send({ from: selectedAccount });
-    return res;
-  } catch(e) {
-    console.error(e);
-  }
-}; */
-
-/* export const withdrawOwnerBalance = async (value) => {
-  if (!isInitialized) {
-    await init();
-  }
-  let send_value = Web3.utils.toWei(value, "ether");
-  try {
-    let res = await predictorsContract.methods
-    .withdrawOwnerBalance(send_value)
-    .send({ from: selectedAccount });
-    return res;
-  } catch(e) {
-    console.error(e);
-  }
-}; */
-
-// Query functions
+/* //////////___ QUERY FUNCTIONS ___////////// */
 
 export const getOwner = async () => {
   if (!isInitialized) {
@@ -242,12 +189,24 @@ export const getUser = async (_walletAddress) => {
   }
 };
 
-export const isUser = async (selectedAccount) => {
+/* export const isUser = async (selectedAccount) => {
   if (!isInitialized) {
     await init();
   }
   try {
     let res = await predictorsContract.methods.isUser(selectedAccount);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+}; */
+
+export const getAllPosts = async (_status) => {
+  if (!isInitialized) {
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods.getAllPosts(_status).call();
     return res;
   } catch (e) {
     console.error(e);
@@ -284,6 +243,41 @@ export const getPostCount = async () => {
   }
   try {
     let res = await predictorsContract.methods.getPostCount().call();
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getSideByUser = async (walletAddress, id) => {
+  if (!isInitialized) {
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods
+      .getSideByUser(walletAddress, id)
+      .call();
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getUserAddress = async () => {
+  if (!isInitialized) {
+    await init();
+  }
+  return selectedAccount;
+};
+
+export const setOwner = async (newOwner) => {
+  if (!isInitialized) {
+    await init();
+  }
+  try {
+    let res = await predictorsContract.methods
+      .setOwner(newOwner.toLowerCase())
+      .send({ from: selectedAccount });
     return res;
   } catch (e) {
     console.error(e);
