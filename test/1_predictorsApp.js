@@ -1,8 +1,8 @@
 const PredictorsApp = artifacts.require("PredictorsApp");
-const SIDE = {
-  LEFT: 0,
-  RIGHT: 1,
-};
+
+const SIDE = {LEFT : 0, RIGHT : 1};
+
+
 
 contract("PredictorsApp", (accounts) => {
   let predictorsApp;
@@ -13,7 +13,7 @@ contract("PredictorsApp", (accounts) => {
     predictorsApp = await PredictorsApp.deployed();
   });
 
-  describe("User Registration", () => {
+  describe("\nA) Test Case : User Registration", () => {
     let userCountBefore;
     let testName1 = "Elon Musk";
     let testName2 = "Mark Zuckerberg";
@@ -113,7 +113,7 @@ contract("PredictorsApp", (accounts) => {
     });
   });
 
-  describe("Post Creation and Participate Another Posts", () => {
+  describe("\nB) Test Case : Post Creation and Participate Another Posts", () => {
     let postCountBefore;
     const postContent1 = "Test post 1";
     const postContent2 = "Test post 2";
@@ -167,20 +167,27 @@ contract("PredictorsApp", (accounts) => {
       );
       assert.equal(post1.postBetPool, postBet1, "Bet pool should match");
       assert.equal(post1.postFinished, false, "Post should not be finished");
-      console.log(
-        "=> 1.Post:",
-        "(",
+      
+      const postDate = new Date(post1.postDate * 1000);  // Unix timestamp saniye cinsinden olduğu için 1000 ile çarpılır
+      const postEndDate = new Date(post1.postEndDate * 1000);
+      const formattedPostDate = postDate.toLocaleString();  
+      const formattedPostEndDate = postEndDate.toLocaleString();
+      console.log("\n",
+        "=> 1.Post:","\n",
+        " - Author: (",
         author.fullName,
-        ")",
-        post1.postContent,
-        " - Bet: ",
-        post1.postBet.toString(),
-        " - EndDate: ",
-        post1.postEndDate.toString(),
-        " - PostDate: ",
-        post1.postDate.toString(),
-        " - Pool: ",
-        post1.postBetPool.toString()
+        ")","\n",
+        " - Post Content:",
+        post1.postContent,"\n",
+        " - Bet Amount: ",
+        web3.utils.fromWei(post1.postBet.toString(), "ether"),"\n",
+        " - Bet Pool: ",
+        web3.utils.fromWei(post1.postBetPool.toString(), "ether"),"\n",
+        " - Post Date: ",
+        formattedPostDate,"\n",
+        " - Post End Date: ",
+        formattedPostEndDate.toString(),"\n"
+       
       );
     });
 
@@ -222,21 +229,29 @@ contract("PredictorsApp", (accounts) => {
       assert.equal(post2.postBetPool, postBet2, "Bet pool should match");
       assert.equal(post2.postFinished, false, "Post should not be finished");
 
-      console.log(
-        "=> 2.Post:",
-        "(",
+      const postDate = new Date(post2.postDate * 1000);  // Unix timestamp saniye cinsinden olduğu için 1000 ile çarpılır
+      const postEndDate = new Date(post2.postEndDate * 1000);
+      const formattedPostDate = postDate.toLocaleString();  
+      const formattedPostEndDate = postEndDate.toLocaleString();
+      console.log("\n",
+        "=> 2.Post:","\n",
+        " - Author: (",
         author.fullName,
-        ")",
-        post2.postContent,
-        " - Bet: ",
-        post2.postBet.toString(),
-        " - EndDate: ",
-        post2.postEndDate.toString(),
-        " - PostDate: ",
-        post2.postDate.toString(),
-        " - Pool: ",
-        post2.postBetPool.toString()
+        ")","\n",
+        " - Post Content:",
+        post2.postContent,"\n",
+        " - Bet Amount: ",
+        web3.utils.fromWei(post2.postBet.toString(), "ether"),"\n",
+        " - Bet Pool: ",
+        web3.utils.fromWei(post2.postBetPool.toString(), "ether"),"\n",
+        " - Post Date: ",
+        formattedPostDate,"\n",
+        " - Post End Date: ",
+        formattedPostEndDate.toString()
+       
       );
+
+
     });
 
     it("should allow user2 to participate in post1", async () => {
@@ -247,7 +262,7 @@ contract("PredictorsApp", (accounts) => {
       const postContent = "This is a new post"; // Test İçeriği
       const postBet = web3.utils.toWei("0.00001", "ether");
       const postEndDate = Math.floor(Date.now() / 1000) + 3600; // 1 saat sonra
-      //const side = SIDE.LEFT;
+      
       await predictorsApp.createPost(
         postContent,
         postBet,
@@ -260,7 +275,6 @@ contract("PredictorsApp", (accounts) => {
       initialParticipants.push(user1); // İlk katılımcılara user1'i ekledik.
 
       const postId = await predictorsApp.postCount(); //Mevcut Post Count'ı çektik
-
       const post = await predictorsApp.posts(postId); //1. postun bilgilerini aldık
 
       /* //////////////////////// */
@@ -268,31 +282,25 @@ contract("PredictorsApp", (accounts) => {
       /* //////////////////////// */
       const user2Bet = web3.utils.toWei("0.00002", "ether");
 
-      //const user2Side = SIDE.RIGHT;
 
       //const user1BetPoolBefore = post.postBetPool; //Postun bet havuzunu çektik
-      const user2BetAmountBefore = await predictorsApp.betAmountByUser(
-        user2,
-        SIDE.LEFT
-      );
+      const sideByUser2Before = await predictorsApp.sideByUser(user2, postId);
 
       await predictorsApp.participateInPost(postId, SIDE.RIGHT, user2Bet, {
         from: user2,
       }); //Posta user2 tarafından katılım sağlandı
-
       initialParticipants.push(user2); // İlk katılımcılara user1'i ekledik.
-      const user2BetAmountAfter = await predictorsApp.betAmountByUser(
-        user2,
-        SIDE.LEFT
-      ); //User2'nin katılımdan sonraki yaptığı bet miktarı
-      //const user1BetPoolAfter = post.postBetPool; //Postun bet havuzunu çektik
+
+      const sideByUser2After = await predictorsApp.sideByUser(user2, postId); //User2'nin katılımdan sonraki yaptığı bet miktarı
+      
+   
 
       /* Hata Kontrolleri */
       assert.equal(
         initialParticipants[0],
         user1,
         "User2 address should be in participants"
-      ); //*Daha sonra geliştirilecek
+      ); 
 
       assert.equal(
         initialParticipants[1],
@@ -303,23 +311,24 @@ contract("PredictorsApp", (accounts) => {
       assert.equal(post.postBetPool, postBet, "Bet pool should match");
       assert.equal(post.postBet, postBet, "Post bet should match");
       assert.equal(
-        user2BetAmountAfter.toNumber(),
-        user2BetAmountBefore.toNumber() + user2BetAmountAfter,
+        sideByUser2After.betAmount.toNumber(),
+        sideByUser2Before.betAmount.toNumber() + user2Bet,
         "User2's bet amount should be updated"
       );
 
       console.log(
+        "=> ",
         user2,
         "participated in post",
         postId.toString(),
         "with",
-        web3.utils.toWei(user2Bet, "ether"),
-        "bet amount."
+        web3.utils.fromWei(user2Bet, "ether"),
+        "bet amount.","\n"
       );
     });
   });
 
-  describe("Report Post Results", () => {
+  describe("\nC) Test Case : Report Post Results", () => {
     it("should report the result of a post", async () => {
       const user1Bet = web3.utils.toWei("0.00001", "ether");
       const user2Bet = web3.utils.toWei("0.00002", "ether");
@@ -329,7 +338,7 @@ contract("PredictorsApp", (accounts) => {
 
       /* POST OLUSTURULDU - user1 */
       await predictorsApp.createPost(
-        "postContent",
+        "Test Post!",
         user1Bet,
         postEndDate,
         SIDE.LEFT,
@@ -344,26 +353,41 @@ contract("PredictorsApp", (accounts) => {
         from: user2,
       });
 
-      console.log("User2 Posta katildi");
-
       /* User3 Posta katildi */
       await predictorsApp.participateInPost(postId, SIDE.LEFT, user3Bet, {
         from: user3,
       });
-      console.log("User3 Posta katildi");
-
       /* Post sonuclandi */
       post.postFinished = true;
-      assert.equal(post.postFinished, true, "Post should be finished");
-      console.log(post.postFinished);
-
-      const winner = SIDE.LEFT;
-      const loser = SIDE.RIGHT;
 
       /* Kazananlar belirlendi */
+      const winner = SIDE.RIGHT; 
+      const loser = SIDE.LEFT;
       await predictorsApp.postResults(postId, winner, loser, { from: user1 });
 
+
+      /* HATA KONTROLLERİ */
       assert.equal(post.postFinished, true, "Post should be finished");
+      
+      const sideByUser1 = await predictorsApp.sideByUser(user1, postId);
+      const sideByUser2 = await predictorsApp.sideByUser(user2, postId);
+      const sideByUser3 = await predictorsApp.sideByUser(user3, postId);
+      
+      
+      console.log(
+        " => Post",
+        postId.toString(),
+        "finished!","\n",
+        " => Winner Side:",
+        winner.toString(),"\n",
+        " => Loser Side :",
+        loser.toString()
+      );
+
+      
+      
+
+      
     });
   });
 
