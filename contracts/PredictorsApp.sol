@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.13;
 
-//import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 
 contract PredictorsApp {
     
@@ -12,7 +12,6 @@ contract PredictorsApp {
     address private owner; // Contract sahibinin adresini tutmak için bir değişken oluşturuyoruz.
     uint256 public userCount; // Kullanıcı sayısını tutmak için bir değişken oluşturuyoruz. Backend'e saklayacağız
     uint256 public postCount; // Post sayısını tutmak için bir değişken oluşturuyoruz. Backend'e saklayacağız
-    address public admin; // Admin adresini tutmak için bir değişken oluşturuyoruz.
     WinnerLoserState public state; // WinnerLoserState struct'ını manipule etmek için bu değişkeni kullanacağız.
 
     /* ////////////////////////////////// */
@@ -20,6 +19,7 @@ contract PredictorsApp {
     /* ////////////////////////////////// */
 
     enum SIDE {LEFT,RIGHT} // LEFT/RIGHT enum tipini oluşturuyoruz.
+    
 
     /* ////////////////////////////////// */
     /* ///////// STRUCT YAPILARI //////// */
@@ -56,19 +56,23 @@ contract PredictorsApp {
         SIDE loser; // SIDE tipinde kaybedenleri tutuyoruz. (Left'in ve Right'ın kaybedenleri)
     }
 
+    //Kullanıcının seçtiği tarafı ve bet miktarını tutmak için SideBetInfo struct'ı oluşturuyoruz.
+    struct SideBetInfo {
+        SIDE side;
+        uint256 betAmount;
+    }
+
     /* ////////////////////////////////// */
     /* //////// MAPPING YAPILARI //////// */
     /* ////////////////////////////////// */
 
     mapping(address => User) public users; // Kullanıcıları tutmak/döndürmek için bir mapping oluşturuyoruz.
     mapping(uint256 => Post) public posts; // Postları tutmak/döndürmek için bir mapping oluşturuyoruz.
-    mapping(SIDE => uint256) public topBetsForSide; //Taraflar için toplam yatırılan bahisler. Ödül dağıtımında kullanılacak
-    mapping(address => mapping(uint256 => SIDE)) public sideByUser; // Kullanıcının seçtiği tarafı tutuyoruz.
-    mapping(address => mapping(SIDE => uint256)) public betAmountByUser; //Kullanıcının tarafa yatırdığı bahis
+    mapping(address => mapping(uint256 => SideBetInfo)) public sideByUser; // Kullanıcıların seçtiği tarafı ve bet miktarını tutmak için bir mapping oluşturuyoruz.
+    mapping(uint256 => mapping(SIDE => uint256)) public topBetsForSide;  //Taraflar için toplam yatırılan bahisler. Ödül dağıtımında kullanılacak
 
-    // Post bet miktarını wei cinsinden tutuyoruz
-    mapping(uint256 => uint256) public postBet;
-    mapping(uint256 => uint256) public postBetPool;
+    mapping(uint256 => uint256) public postBet; //Postun bet miktarını tutuyoruz.
+    mapping(uint256 => uint256) public postBetPool; //Postun havuzunu tutuyoruz.
 
 
     /* ////////////////////////////////// */
@@ -79,9 +83,9 @@ contract PredictorsApp {
     event NewUser(uint256 id, string fullName, address walletAddress);
     event NewPost(uint256 id,string postContent,uint256 postBet,uint256 postEndDate,address postAuthor,SIDE _side);
     event PostParticipation(uint256 postId,address participant,uint256 amount,SIDE _side);
-    event PostFinish(uint256 postId,address winner,uint256 totalBet,uint256 authorReward);
+    event PostFinish(uint256 postId,SIDE winner,uint256 reward,address participant);
+    event UserDetailsUpdated(address indexed userAddress, string newFullName, bool isVerified);
     event BalanceWithdrawn(address walletAddress,uint256 amount);
-    
     /* ////////////////////////////////// */
     /* /////////// CONSTRUCTOR ////////// */
     /* ////////////////////////////////// */
@@ -89,9 +93,20 @@ contract PredictorsApp {
     // Başlangıçta ilklenmesi için constructor fonksiyonu oluşturuyoruz, kullanıcı ve post sayılarını sıfıra ayarlıyoruz.
     constructor() {
         owner = msg.sender;
-       
-       /*  userCount = userCount;
-        postCount = postCount; */
+        userCount=1;
+
+        users[owner] = User({
+            id: userCount,
+            fullName: "Admin",
+            balance: 0,
+            walletAddress: owner,
+            registerDate: block.timestamp,
+            isVerified: true, //dogrulanmis mi
+            partipicatedPost: new uint256[](0), //diger katildigi tahminlerin/postların indexi
+            allPredictions: new uint256[](0), //oluşturduğu postların/tahminlerin indexi
+            predictionSuccesful: 0 //Kullanıcının basarili tahmin sayısını tutuyoruz
+        });
+        
     }
 
     /* ////////////////////////////////// */
@@ -100,14 +115,16 @@ contract PredictorsApp {
 
     // Sadece adminin kullanabileceği fonksiyonları belirlemek için bir modifier oluşturuyoruz.
     modifier onlyOwner() {
-        require(msg.sender == owner, "Sadece hesap sahibi degistirebilir!");
+        require(msg.sender == owner, "Only admin can change!");
         _;
     }
+
     
     /* ////////////////////////////////// */
     /* /////// EXECUTE FONKSIYONLAR ///// */
     /* ////////////////////////////////// */
-    // UI'da kullanıcı değişirse yeni sahipliği setOwner ile vereceğiz
+    
+    // Contract sahipliğini başka kullanıcıya vermek için
     function setOwner(address _newOwner) external onlyOwner {  
         owner = _newOwner;
     }
@@ -146,7 +163,10 @@ contract PredictorsApp {
         initialParticipants[0] = msg.sender;
 
         //Seçilen tarafı post ID sine göre kullanıcının seçtiği tarafa mapliyoruz.
-        sideByUser[msg.sender][postCount] = _side;
+        sideByUser[msg.sender][postCount] = SideBetInfo({
+            side: _side,
+            betAmount: _postBet
+        });
         
         posts[postCount] = Post({
             id: postCount, //Postun ID si
@@ -160,9 +180,9 @@ contract PredictorsApp {
             //taraf: sideByUser[msg.sender][postCount] //Kahinin post'ta seçeceği tarafı structa atadık
         });
 
-        //Kahinin evet veya hayır seçeneğine ödediği miktarı ve hangi tarafını seçtiğini tutan mappingi güncelleiyoruz.
-        betAmountByUser[msg.sender][_side] += _postBet; //Kahin'in odedigi miktari guncelledik
-        topBetsForSide[_side] += _postBet;
+        //Kahinin seçtiği tarafa göre yatırdığı beti havuza ekliyoruz
+        topBetsForSide[postCount][_side] += _postBet;
+        
         
         //Kullanicinin toplam tahmin sayisini guncelliyoruz
         users[msg.sender].allPredictions.push(postCount);
@@ -179,29 +199,26 @@ contract PredictorsApp {
         require(posts[_postId].postParticipants[0] != msg.sender,
             "Kendi kehanetine katilim yapamazsin!");
 
-        //Evet veya Hayır seçeneğinin toplam toplam havuzuna amount u ekliyoruz.
-        topBetsForSide[_side] += _amount;
+        
         posts[_postId].postBetPool += _amount; //Postun havuzunu güncelliyoruz.
+        topBetsForSide[postCount][_side] += _amount; //Side için toplam yatırılan bahisleri güncelliyoruz.
 
-        //Kahin'in evet veya hayır seçeneğine ödediği miktarı güncelleiyoruz.
-        //Örn: Kahin(msg.sender) "Evet/Hayır" seçeneğine _amount miktar ödeme ekledi.
-        betAmountByUser[msg.sender][_side] += _amount; //Kahin'in odedigi miktari guncelledik
-
-
-        sideByUser[msg.sender][_postId] = _side; //Kullanıcının postID'ye göre tarafını güncelledik
-        //posts[_postId].taraf = _side;//Post'un taraf havuzunu arttırdık
-
+        sideByUser[msg.sender][_postId] = SideBetInfo({ //Kullanıcının seçtiği tarafı post ID sine göre mapliyoruz.
+            side: _side,
+            betAmount: _amount
+        });
+   
         posts[_postId].postParticipants.push(msg.sender); // Katılan kullanıcının cüzdan adresini katilimcilar dizisine ekledik
 
-        //Kullanıcının diğer katıldığı postları güncelliyoruz.
-        users[msg.sender].partipicatedPost.push(_postId);
+        
+        users[msg.sender].partipicatedPost.push(_postId); //Kullanıcının diğer katıldığı postları güncelliyoruz.
 
         emit PostParticipation(_postId, msg.sender, _amount, _side);
     }
 
     // Etkinligin kazanani belirleyen fonksiyon.
     // winner ile 0(LEFT) veya 1(RIGHT) alacaz. loser ile 0(LEFT) veya 1(RIGHT) alacaz
-    function postResults( uint256 _postId, SIDE _winner, SIDE _loser) external payable {
+    function postResults( uint256 _postId, SIDE _winner, SIDE _loser) external payable onlyOwner() {
         //require(predictor == msg.sender, "Kahin degilsiniz!"); //Kahin olup olmadığını kontrol ediyoruz.
         require(posts[_postId].postFinished == false, "Kehanet bitmedi!"); //Kehanetin bitmediyse devam et, bittiyse rapor oluşturma.
         
@@ -210,40 +227,39 @@ contract PredictorsApp {
         state.loser = _loser; //Param ile gelen loser'i struct'taki loser'a atiyoruz.
         posts[_postId].postFinished = true; //Kehanetin bittigini belirtiyoruz.
 
-    
-        //Kazananları listelemek için for kullanacağız. 
-        //Her döngüde kullanıcının state(winner) durumunu kontrol edeceğiz.
-        // Side durumunu ve katılımcıları almak için geçici diziler oluşturuyoruz
-        SIDE[] memory participantsSides = new SIDE[](posts[_postId].postParticipants.length); 
-        address[] memory participantsAddresses = posts[_postId].postParticipants; 
         
-        uint totalBetPool = posts[_postId].postBetPool;
+        uint256 totalWinnerBet = topBetsForSide[_postId][_winner]; //Kazanan tarafın toplam bahis miktarını al
+        //uint256 totalLoserBet = topBetsForSide[_postId][_loser]; //Kaybeden tarafın toplam bahis miktarını al
         
+        
+        // Kazananlara ödül miktarını hesapla
+        for (uint256 i = 0; i < posts[_postId].postParticipants.length; i++) { //Tüm katılımcıları dön
+            address participant = posts[_postId].postParticipants[i]; //Her katılımcının adresini al
+            
+            // Kullanıcının bahis miktarını ve katıldığı taraftan toplam bahis miktarını al
+            uint256 userBet = sideByUser[participant][_postId].betAmount;
 
-        for (uint256 i = 0; i < participantsAddresses.length; i++) {
-            address participant = participantsAddresses[i];
-            participantsSides[i] = sideByUser[participant][_postId];
-
-            if(participantsSides[i] == state.winner){  // Katılımcının adresi  = winner ise
+            // Eğer katıldığı taraf kazanan ise ödül miktarını hesapla
+            if (sideByUser[participant][_postId].side == _winner) {
                 
-                users[participant].predictionSuccesful +=1; //Kazananlarin basarili tahmin degerini guncelledik
-
-                // Odul miktarini hesapla (kazananlarin toplam bahis havuzunun yuzdesi)
-                uint participantBet = betAmountByUser[participant][participantsSides[i]]; //Yatırdığı sermaye
                 
+                // Kazananlara düşen payı hesapla
                 //(Yatırdığı bahis * Havuzdaki top miktar) /toplam kazanan sayısı
-                uint rewardAmount = (participantBet * totalBetPool) / topBetsForSide[state.winner];
-                users[participant].balance += rewardAmount;
-                //payable(users[participant]).transfer(users[participant].balance);
-                
-                //uint256 sermaye = betAmountByUser[msg.sender][state.winner];
-                
-                // KAZANC + (no diyenlerin sayisi * sermaye) / KAZANAN KISI SAYISI
-                // uint256 kazanc = sermaye + (topBetsForSide[state.loser] * sermaye) / topBetsForSide[state.winner];
-   
-            }   
+                uint256 reward = (userBet * posts[_postId].postBetPool) / totalWinnerBet;
+
+                // Kullanıcının bakiyesine ödülü ekle
+                users[participant].balance += reward;
+
+                // Kazanan tahmin sayısını artır
+                users[participant].predictionSuccesful += 1;
+
+                emit PostFinish(_postId, _winner, reward, participant);
+            }
         }
+
     }
+
+
 
     /* //withdrawBalance
     function withdrawBalance(uint amount) external nonReentrant {
@@ -259,6 +275,18 @@ contract PredictorsApp {
 
         emit BalanceWithdrawn(msg.sender, amount);
     } */
+
+
+    function updateUserDetails(address _userAddress, string memory _newFullName, bool _isVerified) external onlyOwner() {
+        require(isUser(_userAddress), "Kullanici bulunamadi!"); // Kullanıcı yoksa devam et
+    
+        // Kullanıcının bilgilerini güncelle
+        users[_userAddress].fullName = _newFullName;
+        users[_userAddress].isVerified = _isVerified;
+
+        // İlgili event'i yayınla
+        emit UserDetailsUpdated(_userAddress, _newFullName, _isVerified);
+    }
 
     /* //////////////////////////////////// */
     /* //////// QUERY FONKSIYONLAR //////// */
@@ -334,41 +362,55 @@ contract PredictorsApp {
     }
 
     // Postları aktif/pasif durumuna göre listeleme fonksiyonu (Parametre 0/1 alır)
+    function getAllPosts() external view returns (Post[] memory) {
+        Post[] memory allPosts = new Post[](postCount);
+
+        for (uint256 i = 1; i <= postCount; i++) {
+            allPosts[i - 1] = posts[i];
+        }
+
+        return allPosts;
+    }
+
+
+    // Postları aktif/pasif durumuna göre listeleme fonksiyonu (Parametre 0/1 alır)
     function getPostByStatus(bool _status) external view returns (Post[] memory) {
-    uint256 count = 0;
+        uint256 count = 0;
 
-    // Tüm postları döngüye alın ve belirtilen durumu sağlayanları sayın
-    for (uint256 i = 1; i <= postCount; i++) {
-        if (posts[i].postFinished == _status) {
-            count++;
+       
+        for (uint256 i = 1; i <= postCount; i++) {
+            if (posts[i].postFinished == _status) {
+                count++;
+            }
         }
-    }
 
-    // Belirtilen durumu sağlayan postları saklamak için dinamik bir dizi oluşturun
-    Post[] memory postsWithStatus = new Post[](count);
-    
-    // Tüm postları tekrar döngüye alın ve belirtilen durumu sağlayanları diziyi ekleyin
-    uint256 index = 0;
-    for (uint256 i = 1; i <= postCount; i++) {
-        if (posts[i].postFinished == _status) {
-            postsWithStatus[index] = posts[i];
-            index++;
+        
+        Post[] memory postsWithStatus = new Post[](count);
+        
+        
+        uint256 index = 0;
+        for (uint256 i = 1; i <= postCount; i++) {
+            if (posts[i].postFinished == _status) {
+                postsWithStatus[index] = posts[i];
+                index++;
+            }
         }
-    }
 
-    return postsWithStatus;
-}
+        return postsWithStatus;
+    }
 
 
     function getOwner() external view returns(address) {
          return owner;
     }
 
+    //get User Information
     function getUser(address _walletAddress) external view returns (User memory) {
         require(isUser(_walletAddress), "Kullanici bulunamadi!");
         return users[_walletAddress];
     }
 
+    //Get Post Information
     function getPost(uint _id) external view returns(Post memory) {
         require(posts[_id].id != 0, "Post does not exist!");
         return posts[_id];
@@ -382,20 +424,31 @@ contract PredictorsApp {
         return postCount;
     }
 
-    // Post bet miktarını ondalıklı sayıya dönüştürerek görüntülemek için bir fonksiyon
+    function getSideByUser(address _userAddress, uint256 _postId) external view returns (SideBetInfo memory) {
+        return sideByUser[_userAddress][_postId];
+    }
+
+    function getTopBetsForSide(uint256 _postId, SIDE _side) external view returns (uint256) {
+        return topBetsForSide[_postId][_side];
+    }
+
     function getPostBet(uint256 _postId) external view returns (uint256) {
-        // Bet miktarını ondalıklı sayıya dönüştürmek için bir çarpan kullanabilirsiniz.
-        // Bu örnekte 1 ETH'in 10^18 wei olduğunu varsayalım.
-        uint256 betMultiplier = 10**18;
-        return postBet[_postId] / betMultiplier;
+        return posts[_postId].postBet;
     }
 
     function getPostBetPool(uint256 _postId) external view returns (uint256) {
-        // Bet miktarını ondalıklı sayıya dönüştürmek için bir çarpan kullanabilirsiniz.
-        // Bu örnekte 1 ETH'in 10^18 wei olduğunu varsayalım.
-        uint256 betMultiplier = 10**18;
-        return postBetPool[_postId] / betMultiplier;
+        return posts[_postId].postBetPool;
     }
-    
 
+    function getPostParticipants(uint256 _postId) external view returns (address[] memory) {
+        return posts[_postId].postParticipants;
+    }
+
+    function getPostParticipantsCount(uint256 _postId) external view returns (uint256) {
+        return posts[_postId].postParticipants.length;
+    }
+
+   
+
+   
 }
