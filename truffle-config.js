@@ -1,8 +1,10 @@
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 require("dotenv").config();
-const mnemonic = process.env["MNEMONIC"].toString().trim();
-//const mnemonic ="";
+//const mnemonic = process.env["MNEMONIC"].toString().trim();
+const mnemonic = "";
 const bscURL = "https://data-seed-prebsc-1-s1.bnbchain.org:8545"; // BSC Testnet (bsctest) URL'si
+const infuraURL =
+  "https://goerli.infura.io/v3/a4fb4cc763be46399d843403359d1acf";
 
 // require('dotenv').config();
 // const mnemonic = process.env["MNEMONIC"];
@@ -23,11 +25,11 @@ module.exports = {
   contracts_build_directory: "./frontend/src/contracts",
 
   networks: {
-
     development: {
       host: "127.0.0.1", // Localhost (default: none)
       port: 7545, // Standard Ethereum port (default: none)
       network_id: "*", // Any network (default: none)
+      networkCheckTimeout: 1000000,
     },
     /*  bsctest: {
       provider: function () {
@@ -38,9 +40,20 @@ module.exports = {
     bsctest: {
       provider: () => new HDWalletProvider(mnemonic, bscURL),
       network_id: 97,
-      confirmations: 10,
+      confirmations: 3,
       timeoutBlocks: 200,
       skipDryRun: true,
+
+      gasPrice: 10000000000,
+    },
+
+    goerli: {
+      provider: () => {
+        return new HDWalletProvider(mnemonic, infuraURL);
+      },
+      network_id: "5", // eslint-disable-line camelcase
+      gas: 4465030,
+      gasPrice: 10000000000,
     },
   },
 
