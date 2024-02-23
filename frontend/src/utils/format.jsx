@@ -18,12 +18,38 @@ export const formattedBet = (value) => {
   return formattedBet;
 };
 
+export const dateToUnix = (value) => {
+  const jsDate = new Date(value);
+  const unixTimestamp = Math.floor(jsDate.getTime() / 1000);
+  return unixTimestamp;
+};
+
+export const unixToDate = (value) => {
+  const date = new Date(parseInt(value) * 1000); // Unix zaman damgasını milisaniyeye çevir
+  const options = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  const formattedDate = date.toLocaleDateString("tr-TR", options);
+
+  return formattedDate;
+};
+
+export const getCurrentUnixTimestamp = () => {
+  const unixTimestamp = Math.floor(Date.now() / 1000);
+  return unixTimestamp;
+};
+
 //Wei'den ethere dönüştür
 export const weiToEth = (value) => {
   const eth = Web3.utils.fromWei(value, "ether");
   return eth;
 };
 
+//Ether'den wei ye dönüştür
 export const ethToWei = (value) => {
   const wei = Web3.utils.toWei(value.toString(), "ether");
   return wei;

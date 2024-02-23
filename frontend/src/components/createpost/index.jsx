@@ -1,39 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
 import { createPost } from "../../Web3Client";
 import Button from "../button";
-import { ethToWei, unixFormat } from "../../utils/format";
+import { dateToUnix, ethToWei } from "../../utils/format";
 import Loader from "../Loader";
+
+import { collection } from "firebase/firestore";
+import { db, addNewPost } from "../../utils/firebaseConfig";
 
 function CreatePost() {
   const navigate = useNavigate();
-  const [postContent, setPostContent] = useState("");
+  const [postDescription, setPostDescription] = useState("");
   const [postBet, setPostBet] = useState("");
   const [postEndDate, setPostEndDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
   const MAX_CONTENT_LENGTH = 600;
+  const postsRef = collection(db, "posts");
 
+  /* BLOCKCHAIN' POST GÖNDERDİYORUZ */
   const handlePostCreation = async () => {
     try {
       setLoading(true);
 
-      if (postContent.length > MAX_CONTENT_LENGTH) {
+      if (postDescription.length > MAX_CONTENT_LENGTH) {
         alert(
           `Maximum character limit (${MAX_CONTENT_LENGTH}) reached for the prediction details!`
         );
         return;
       }
 
-      const jsDate = new Date(postEndDate);
-      const unixTimestamp = Math.floor(jsDate.getTime() / 1000);
-
       await createPost(
-        postContent,
+        postDescription,
         ethToWei(postBet),
-        unixTimestamp,
+        dateToUnix(postEndDate),
         0,
         async (transactionHash) => {
           setLoading(true);
@@ -41,6 +42,7 @@ function CreatePost() {
           await performPostCompletionActions();
         }
       );
+      await addNewPost(postsRef, postDescription, postBet, postEndDate);
 
       navigate("/");
     } catch (error) {
@@ -52,18 +54,17 @@ function CreatePost() {
     }
   };
 
+  /*   const handleAddFirebase = useCallback(() => {
+    const addFirebaseAsync = async () => {
+      addNewPost(postsRef, postDescription, postBet, postEndDate);
+    };
+
+    addFirebaseAsync();
+  }, [postDescription, postBet, postEndDate, postsRef]); */
+
   const performPostCompletionActions = async () => {
     setLoading(false);
     setSubmitted(true);
-
-    console.log(
-      "OK 2 => Content: ",
-      postContent,
-      "Bet: ",
-      ethToWei(postBet),
-      "Side: ",
-      0
-    );
   };
 
   const handleInputChange = (e) => {
@@ -71,11 +72,11 @@ function CreatePost() {
 
     // Harf sınır kontrolü
     if (inputValue.length <= MAX_CONTENT_LENGTH) {
-      setPostContent(inputValue);
+      setPostDescription(inputValue);
     }
   };
 
-  const remainingCharacters = MAX_CONTENT_LENGTH - postContent.length;
+  const remainingCharacters = MAX_CONTENT_LENGTH - postDescription.length;
 
   return (
     <div className="flex flex-col gap-5">
@@ -98,7 +99,7 @@ function CreatePost() {
         <textarea
           className="w-full p-2 border rounded-md text-black bg-gray-100"
           placeholder="Details of your Prediction - (eg. Bitcoin be above $ 50,000 on 31.12.2021?)"
-          value={postContent}
+          value={postDescription}
           onChange={handleInputChange}
           rows={4}
         />

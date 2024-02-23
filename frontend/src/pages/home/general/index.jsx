@@ -1,11 +1,23 @@
 import { getPostCount, getPost } from "../../../Web3Client";
 
 import Post from "../../../components/post";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../../../utils/firebaseConfig";
+
+const ref = collection(db, "posts"); //Collection'ların olduğu yer
 
 export default function General() {
-  const [posts, setPosts] = useState([]);
-  const [logggedIn, setLoggedIn] = useState(posts && posts.length > 0);
+  // const [posts, setPosts] = useState([]);
+  const [posts, isLoading] = useCollectionData(ref);
+  /* const [logggedIn, setLoggedIn] = useState(posts && posts.length > 0); */
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  console.log(posts);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,22 +44,13 @@ export default function General() {
 
   return (
     <div className="px-5 py-5">
-      {!logggedIn && (
-        <div className="px-5 py-5">
-          <h2 className="text-center mt-10 text-[gray]/[.50]">
-            Please log in to see the contents
-          </h2>
-        </div>
-      )}
-      {
-        <ul>
-          {posts.map((post, index) => (
-            <li key={index}>
-              <Post data={post} />
-            </li>
-          ))}
-        </ul>
-      }
+      <ul>
+        {posts.map((post, index) => (
+          <li key={index}>
+            <Post postData={post} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

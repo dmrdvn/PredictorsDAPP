@@ -5,7 +5,7 @@ import { VscWorkspaceTrusted } from "react-icons/vsc";
 
 import { formattedBet, weiToEth } from "../../utils/format";
 
-const Toolbar = ({ data }) => {
+const Toolbar = ({ post }) => {
   return (
     <div
       id="post-action"
@@ -25,14 +25,16 @@ const Toolbar = ({ data }) => {
           className="p-1 flex items-center gap-1 hover:text-[#00ba7c] hover:text-[18px]"
           title="Comments"
         >
-          <AiOutlineComment /> <span className="text-[.9rem]">343</span>
+          <AiOutlineComment />{" "}
+          <span className="text-[.9rem]">{post.comments.length}</span>
         </a>
         <a
           href="#"
           className="p-1 flex items-center gap-1 hover:text-[orange] hover:text-[18px]"
           title="Trusted Points"
         >
-          <VscWorkspaceTrusted /> <span className="text-[.9rem]">100</span>
+          <VscWorkspaceTrusted />{" "}
+          <span className="text-[.9rem]">{post.trustCount}</span>
         </a>
       </div>
 
@@ -41,7 +43,7 @@ const Toolbar = ({ data }) => {
         <div className="flex items-center justify-center gap-1">
           Participants:
           <span className="p-1  bg-[#eef3f41a] rounded-[0.375rem]">
-            {data[5].length}
+            {post.postParticipants.length}
           </span>
         </div>
 
@@ -49,7 +51,7 @@ const Toolbar = ({ data }) => {
           <p>Bet Pool:</p>
           <span className="p-1 pr-1.5 bg-[#eef3f41a] rounded-[0.375rem] flex items-center">
             <FaEthereum />
-            {formattedBet(data[6])}
+            {post.postBetPool}
           </span>
         </div>
 
@@ -59,11 +61,11 @@ const Toolbar = ({ data }) => {
             className="p-1  bg-[#eef3f41a] rounded-[0.375rem]"
             title="Calculate Method => Web3 ID + Participant Count + Trust Count + Comment Count"
           >
-            {weiToEth(data[6]) > 0 && weiToEth(data[6]) <= 1
+            {(post.postBetPool > 0 && post.postBetPool) <= 1
               ? "50"
-              : weiToEth(data[6]) > 1 && weiToEth(data[6]) <= 5
+              : (post.postBetPool > 1 && post.postBetPool) <= 5
               ? "75"
-              : weiToEth(data[6]) > 5
+              : post.postBetPool > 5
               ? "100"
               : "0"}
           </span>

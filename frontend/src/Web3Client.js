@@ -80,6 +80,7 @@ export const createPost = async (
     let res = await predictorsContract.methods
       .createPost(_postContent, _postBet, _postEndDate, _side)
       .send({ from: selectedAccount });
+
     return res;
   } catch (e) {
     console.error(e);
@@ -201,12 +202,12 @@ export const getUser = async (_walletAddress) => {
   }
 }; */
 
-export const getAllPosts = async (_status) => {
+export const getAllPosts = async () => {
   if (!isInitialized) {
     await init();
   }
   try {
-    let res = await predictorsContract.methods.getAllPosts(_status).call();
+    let res = await predictorsContract.methods.getAllPosts().call();
     return res;
   } catch (e) {
     console.error(e);

@@ -6,14 +6,12 @@ import lv4 from "../../assets/nfts/lv4predictor.png";
 import lv5 from "../../assets/nfts/lv5predictor.png";
 import lv6 from "../../assets/nfts/lv6predictor.png";
 
-export default function Photo({ name, postsCount }) {
-  const [profileImg, setProfileImg] = useState("");
-
-  useEffect(() => {
+export default function Photo({ img, name }) {
+  /* useEffect(() => {
     handlePhoto(postsCount);
-  }, [postsCount]);
+  }, [postsCount]); */
 
-  function handlePhoto(postsCount) {
+  /*  function handlePhoto(postsCount) {
     if (postsCount <= 3) {
       setProfileImg(lv1);
     } else if (postsCount > 3 && postsCount <= 5) {
@@ -28,13 +26,13 @@ export default function Photo({ name, postsCount }) {
       setProfileImg(lv6);
     }
   }
-
+ */
   return (
     <div
       id="photo"
       className="flex flex-col gap-3 items-center justify-center min-w-[50px]"
     >
-      <img src={profileImg} className="w-12 h-12 rounded-full object-cover" />
+      <img src={img} className="w-12 h-12 rounded-full object-cover" />
 
       <h3 className="text-[.80rem] opacity-50 flex items-center justify-center text-center">
         {name}

@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { participateInPost, getSideByUser } from "../../Web3Client";
+import { participateInPost, getUserAddress, getPost } from "../../Web3Client";
 import Button from "../button";
-import { unixFormat, ethToWei, weiToEth } from "../../utils/format";
+import { unixFormat, ethToWei, unixToDate } from "../../utils/format";
 import Loader from "../Loader";
+import { postParticipatation } from "../../utils/firebaseConfig";
 
 const SIDE = {
   LEFT: 0,
   RIGHT: 1,
 };
 
-function ParticipatePost({ data }) {
+function ParticipatePost({ postData }) {
   const navigate = useNavigate();
-  const [post, setPost] = useState(data);
-  const [participants, setParticipants] = useState();
+  const [post, setPost] = useState(postData);
+  const [user, setUser] = useState("");
+  const [participants, setParticipants] = useState(postData.postParticipants);
   const [postBet, setPostBet] = useState("");
   const [side, setSide] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,11 +23,18 @@ function ParticipatePost({ data }) {
 
   const handlePostParticipatation = async () => {
     //const weiAmount = ethToWei(postBet);
-
     try {
-      setLoading(true);
+      //setLoading(true);
+      const getPostDetails = await getPost(Number(postData.id));
+      console.log("getPostDetails", getPostDetails.toString());
+      console.log("getPostDetails", getPostDetails.postContent);
+      /* console.log("getPostDetails", getPostDetails[1]); */
+
+      /* 
+      const userAddress = await getUserAddress();
+      setUser(userAddress);
       await participateInPost(
-        post[0],
+        post.id,
         side,
         ethToWei(postBet),
         async (transactionHash) => {
@@ -34,18 +43,23 @@ function ParticipatePost({ data }) {
           await performPostCompletionActions();
         }
       );
-      navigate("/");
+
+      navigate("/"); */
     } catch (error) {
-      setLoading(false);
+      /* setLoading(false); */
       console.error("Participate failed:", error);
     } finally {
-      setLoading(false);
-      setSubmitted(true);
+      /* setLoading(false);
+      setSubmitted(true); */
     }
   };
 
-  useEffect(() => {
-    setPost(data);
+  /*  const handlePostParticipate = () => {
+    handlePostParticipatation(post.id, user, side, postBet);
+  }; */
+
+  /*  useEffect(() => {
+    setPost(postData);
 
     // Katılımcıları ve bahis miktarlarını getir
     const fetchParticipantData = async () => {
@@ -58,7 +72,7 @@ function ParticipatePost({ data }) {
     };
 
     fetchParticipantData();
-  }, [post]);
+  }, [post]); */
 
   const performPostCompletionActions = async () => {
     setLoading(false);
@@ -72,10 +86,11 @@ function ParticipatePost({ data }) {
 
       <div className="bg-[#eef3f41a] w-full p-4 overflow-hidden rounded-[0.375rem] z-0 flex flex-col">
         <div className="flex text-[10px] text-[white]/[.50]">
-          Shared Date: {unixFormat(post[3]).toLocaleString()}
+          {/*  Shared Date: {unixFormat(post[3]).toLocaleString()} */}
+          Shared Date: {unixToDate(post.postDate)}
         </div>
 
-        <h3>{post[1]}</h3>
+        <h3>{post.postContent}</h3>
 
         <div className="relative bg-[#152033] z-1 mt-10 w-full px-3 py-4  rounded-[0.375rem] z-0 flex flex-col">
           <div className="flex flex-col">
@@ -99,7 +114,7 @@ function ParticipatePost({ data }) {
                   participants.map((participant, index) => (
                     <React.Fragment key={index}>
                       <div className="text-sm flex justify-left items-center">
-                        {participant.wallet === post[5][0]
+                        {participant.wallet === post.author
                           ? "0x..." +
                             String(participant.wallet).slice(-10) +
                             " ( Author )"
@@ -109,7 +124,8 @@ function ParticipatePost({ data }) {
                         {Number(participant.side) == 1 ? "Reject" : "Approve"}
                       </div>
                       <div className="text-sm flex justify-left items-center">
-                        {weiToEth(participant.betAmount)}
+                        {/*  {weiToEth(participant.bet)} */}
+                        {participant.bet}
                       </div>
                     </React.Fragment>
                   ))}

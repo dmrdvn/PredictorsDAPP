@@ -29,16 +29,17 @@
   "homepage": "https://github.com/dmrdvn/PredictorsDAPP#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "eth-block-tracker": "^8.1.0",
-    "ethers": "^6.9.0",
-    "viem": "^1.19.1",
-    "wagmi": "^1.4.6"
+    "ethers": "^6.11.1",
+    "firebase": "^10.8.0",
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.13"
   },
   "devDependencies": {
     "@openzeppelin/test-helpers": "^0.5.16",
-    "chai": "^4.3.10",
-    "hardhat": "^2.19.2",
-    "mocha": "^10.2.0"
+    "chai": "^4.4.1",
+    "hardhat": "^2.20.1",
+    "mocha": "^10.3.0"
   }
 }
